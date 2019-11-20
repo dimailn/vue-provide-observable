@@ -10,8 +10,5 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "vue": "2.5.13",
-    "lodash.clonedeep": "^4.5.0"
-  }
+  "dependencies": {}
 }

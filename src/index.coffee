@@ -1,9 +1,6 @@
 # props is the hash with name => value
 
-import Vue from 'vue'
-import cloneDeep from 'lodash.clonedeep'
-
-export default (pluginName, propsFactory, nameMapper = (name) -> name) ->
+export default (Vue, pluginName, propsFactory, nameMapper = (name) -> name) ->
 
   return console.error "You must provide props factory" unless typeof propsFactory is 'function'
 
