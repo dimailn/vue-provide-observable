@@ -7,6 +7,8 @@ export default (pluginName, propsFactory, nameMapper = (name) -> name) ->
   props = propsFactory()
 
   provide: ->
+    return if this.$options.$vpo
+
     vue = Object.getPrototypeOf(@$root).constructor
 
     provide = {
@@ -14,6 +16,7 @@ export default (pluginName, propsFactory, nameMapper = (name) -> name) ->
     }
     provide[pluginName].wrapper = new vue(
       data: propsFactory()
+      $vpo: true
     )
 
     @["$_vueProvideObservable_#{pluginName}_wrapper"] = provide[pluginName].wrapper
@@ -21,22 +24,32 @@ export default (pluginName, propsFactory, nameMapper = (name) -> name) ->
     provide
 
   created: ->
+    return if this.$options.$vpo
+
     @["$_vueProvideObservable_#{pluginName}_wrapper_update"]()
 
   updated: ->
+    return if this.$options.$vpo
+
     @["$_vueProvideObservable_#{pluginName}_wrapper_update"]()
 
   # TO DO: optimize
   watch:
     Object.keys(props).reduce(
       (obj, name) ->
-        obj[nameMapper(name)] = -> @["$_vueProvideObservable_#{pluginName}_wrapper_update"]()
+        obj[nameMapper(name)] = ->
+          # hotfix, replace with programmatically watch
+          return if this.$options.$vpo
+
+          @["$_vueProvideObservable_#{pluginName}_wrapper_update"]()
         obj
       {}
     )
 
   methods:
     "$_vueProvideObservable_#{pluginName}_wrapper_update": ->
+      return if this.$options.$vpo
+
       for name of props
         @["$_vueProvideObservable_#{pluginName}_wrapper"][name] = @[nameMapper(name)]
 
