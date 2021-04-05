@@ -1,8 +1,6 @@
 # props is the hash with name => value
 
 vpoWrapperUpdate = ->
-  console.log 'vpo wrapper update'
-
   return if this.$options.$vpo
 
   Object.keys(@$options.provideObservable).forEach (pluginName) =>
