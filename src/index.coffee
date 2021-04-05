@@ -67,8 +67,8 @@ VueProvideObservableMixin = {
 
 export default {
   install: (Vue, options) ->
-    return if Vue::$vpo
+    return if Vue::$vpoOptions
     
     Vue.mixin(VueProvideObservableMixin)
-    Vue::$vpo = {}
+    Vue::$vpoOptions = {}
 }
