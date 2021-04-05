@@ -1,55 +1,76 @@
 # props is the hash with name => value
 
-export default (pluginName, propsFactory, nameMapper = (name) -> name) ->
+vpoWrapperUpdate = ->
+  console.log 'vpo wrapper update'
 
-  return console.error "You must provide props factory" unless typeof propsFactory is 'function'
+  return if this.$options.$vpo
 
-  props = propsFactory()
+  Object.keys(@$options.provideObservable).forEach (pluginName) =>
+    {nameMapper} = @$options.provideObservable[pluginName]
 
+    for name in Object.keys(@["$vpoWrapper"][pluginName])
+      @["$vpoWrapper"][pluginName][name] = @[nameMapper(name)]
+
+VueProvideObservableMixin = {
   provide: ->
-    return if this.$options.$vpo
+    return unless @$options.provideObservable
+
+    return if @$options.$vpo
+
 
     vue = Object.getPrototypeOf(@$root).constructor
 
-    provide = {
-      "#{pluginName}": { wrapper: {} }
-    }
-    provide[pluginName].wrapper = new vue(
-      data: propsFactory()
-      $vpo: true
-    )
+    data = {}
+    
+    Object.keys(@$options.provideObservable).forEach (pluginName) =>
+      {propsFactory} = @$options.provideObservable[pluginName]
 
-    @["$_vueProvideObservable_#{pluginName}_wrapper"] = provide[pluginName].wrapper
+      data[pluginName] = propsFactory()
+
+    provide = {
+      $vpo: { wrapper: new vue({data, $vpo: true}) }
+    }
+
+    @["$vpoWrapper"] = provide.$vpo.wrapper
 
     provide
 
   created: ->
-    return if this.$options.$vpo
+    return unless @$options.provideObservable
 
-    @["$_vueProvideObservable_#{pluginName}_wrapper_update"]()
+    return if this.$options.$vpo
+    
+
+    # TO DO: optimize
+    Object.keys(@$options.provideObservable).forEach (pluginName) =>
+      {nameMapper} = @$options.provideObservable[pluginName]
+
+      Object.keys(@["$vpoWrapper"][pluginName]).forEach (propertyName) =>
+        @$watch(
+          nameMapper(propertyName)
+          =>
+            # hotfix, replace with programmatically watch
+
+            return if this.$options.$vpo
+
+            vpoWrapperUpdate.bind(this)()
+        )
+
+    vpoWrapperUpdate.bind(this)()
 
   updated: ->
+    return unless @$options.provideObservable
+
     return if this.$options.$vpo
 
-    @["$_vueProvideObservable_#{pluginName}_wrapper_update"]()
+    vpoWrapperUpdate.bind(this)()
 
-  # TO DO: optimize
-  watch:
-    Object.keys(props).reduce(
-      (obj, name) ->
-        obj[nameMapper(name)] = ->
-          # hotfix, replace with programmatically watch
-          return if this.$options.$vpo
+}
 
-          @["$_vueProvideObservable_#{pluginName}_wrapper_update"]()
-        obj
-      {}
-    )
-
-  methods:
-    "$_vueProvideObservable_#{pluginName}_wrapper_update": ->
-      return if this.$options.$vpo
-
-      for name of props
-        @["$_vueProvideObservable_#{pluginName}_wrapper"][name] = @[nameMapper(name)]
-
+export default {
+  install: (Vue, options) ->
+    return if Vue::$vpo
+    
+    Vue.mixin(VueProvideObservableMixin)
+    Vue::$vpo = {}
+}
