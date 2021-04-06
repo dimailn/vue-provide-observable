@@ -27,7 +27,7 @@ VueProvideObservableMixin = {
       data[pluginName] = propsFactory()
 
 
-    computed = Object.keys(@$vpo.wrapper.$options?.data || {}).filter((pluginName) -> !localPluginNames.includes(pluginName)).reduce(
+    computed = Object.keys(@$vpo.wrapper.$options?.data?() || {}).filter((pluginName) -> !localPluginNames.includes(pluginName)).reduce(
       (computed, pluginName) => computed[pluginName] = => @$vpo.wrapper[pluginName]; computed
       {}
     )
