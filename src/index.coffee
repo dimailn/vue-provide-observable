@@ -77,7 +77,7 @@ VueProvideObservableMixin = {
 
 }
 
-VueProvideObservable = {
+export default {
   install: (Vue, options) ->
     return if Vue::$vpoOptions
     
