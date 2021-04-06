@@ -19,19 +19,31 @@ VueProvideObservableMixin = {
     vue = Object.getPrototypeOf(@$root).constructor
 
     data = {}
-    
-    Object.keys(@$options.provideObservable).forEach (pluginName) =>
+    localPluginNames = Object.keys(@$options.provideObservable)
+
+    localPluginNames.forEach (pluginName) =>
       {propsFactory} = @$options.provideObservable[pluginName]
 
       data[pluginName] = propsFactory()
 
+
+    computed = Object.keys(@$vpo.wrapper.$options?.data || {}).filter((pluginName) -> !localPluginNames.includes(pluginName)).reduce(
+      (computed, pluginName) => computed[pluginName] = => @$vpo.wrapper[pluginName]; computed
+      {}
+    )
+
     provide = {
-      $vpo: { wrapper: new vue({data, $vpo: true}) }
+      $vpo: { wrapper: new vue({data, $vpo: true, computed}) }
     }
 
     @["$vpoWrapper"] = provide.$vpo.wrapper
 
     provide
+
+  inject:
+    $vpo: {
+      'default': { wrapper: { } }
+    }
 
   created: ->
     return unless @$options.provideObservable
@@ -65,10 +77,11 @@ VueProvideObservableMixin = {
 
 }
 
-export default {
+VueProvideObservable = {
   install: (Vue, options) ->
     return if Vue::$vpoOptions
     
     Vue.mixin(VueProvideObservableMixin)
     Vue::$vpoOptions = {}
 }
+
