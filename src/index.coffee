@@ -1,6 +1,6 @@
 # props is the hash with name => value
 
-export default (pluginName, propsFactory, nameMapper = (name) -> name, Vue = null) ->
+export default (pluginName, propsFactory, nameMapper = ((name) -> name), Vue = null) ->
 
   return console.error "You must provide props factory" unless typeof propsFactory is 'function'
 
