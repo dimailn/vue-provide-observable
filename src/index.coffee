@@ -1,13 +1,20 @@
 # props is the hash with name => value
 
-export default (pluginName, propsFactory, nameMapper = ((name) -> name), Vue = null) ->
+export installer = (Vue, options) ->
+  install: ->
+    return if Vue::$vpo
+
+    Vue::$vpo = {}
+    Vue::$vpo.Vue = Vue
+
+export default (pluginName, propsFactory, nameMapper = (name) -> name) ->
 
   return console.error "You must provide props factory" unless typeof propsFactory is 'function'
 
   props = propsFactory()
 
   provide: ->
-    vue = Vue || Object.getPrototypeOf(@$root).constructor
+    vue = @$root.$vpo?.Vue || Object.getPrototypeOf(@$root).constructor
 
     provide = {
       "#{pluginName}": { wrapper: {} }
@@ -39,4 +46,5 @@ export default (pluginName, propsFactory, nameMapper = ((name) -> name), Vue = n
     "$_vueProvideObservable_#{pluginName}_wrapper_update": ->
       for name of props
         @["$_vueProvideObservable_#{pluginName}_wrapper"][name] = @[nameMapper(name)]
+
 
