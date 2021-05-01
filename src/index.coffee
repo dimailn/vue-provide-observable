@@ -1,13 +1,13 @@
 # props is the hash with name => value
 
-export default (pluginName, propsFactory, nameMapper = (name) -> name) ->
+export default (pluginName, propsFactory, nameMapper = (name) -> name, Vue = null) ->
 
   return console.error "You must provide props factory" unless typeof propsFactory is 'function'
 
   props = propsFactory()
 
   provide: ->
-    vue = Object.getPrototypeOf(@$root).constructor
+    vue = Vue || Object.getPrototypeOf(@$root).constructor
 
     provide = {
       "#{pluginName}": { wrapper: {} }
