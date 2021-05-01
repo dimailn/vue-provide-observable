@@ -1,11 +1,12 @@
 # props is the hash with name => value
 
-export installer = (Vue, options) ->
-  install: ->
+export installer = {
+  install: (Vue, options) ->
     return if Vue::$vpo
 
     Vue::$vpo = {}
     Vue::$vpo.Vue = Vue
+}
 
 export default (pluginName, propsFactory, nameMapper = (name) -> name) ->
 
