@@ -47,7 +47,7 @@ export default (
 
     @["$__vpo__#{pluginName}"].watchers = Object.keys(props).map((name) =>
       # TO DO: optimize
-      @$watch(name, vpoWrapperUpdate.bind(@))
+      @$watch(nameMapper(name), vpoWrapperUpdate.bind(@))
     )
 
     vpoWrapperUpdate.call(@)
