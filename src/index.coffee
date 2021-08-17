@@ -24,7 +24,7 @@ export default (
       @["$__vpo__#{pluginName}"].wrapper[name] = @[nameMapper(name)]
 
   provide: ->
-    return unless shouldProvide(@)
+    return {} unless shouldProvide(@)
 
     vue = @$root.$vpo?.Vue || Object.getPrototypeOf(@$root).constructor
 
