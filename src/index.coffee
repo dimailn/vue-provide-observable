@@ -1,11 +1,12 @@
 # props is the hash with name => value
+import {reactive, version} from 'vue'
 
 export installer = {
   install: (Vue, options) ->
-    return if Vue::$vpo
+    return if Vue.config.globalProperties.$vpo
 
-    Vue::$vpo = {}
-    Vue::$vpo.Vue = Vue
+    Vue.config.globalProperties.$vpo = {}
+    Vue.config.globalProperties.$vpo.Vue = Vue
 }
 
 export default (
@@ -31,7 +32,8 @@ export default (
     provide = {
       "#{pluginName}": { wrapper: {} }
     }
-    provide[pluginName].wrapper = vue.observable(
+
+    provide[pluginName].wrapper = reactive(
       propsFactory()
     )
 
