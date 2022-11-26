@@ -6,7 +6,6 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index.js',
     libraryTarget: 'umd',
-    libraryExport: 'default',
     library: 'vpo',
     publicPath: '/dist/',
     globalObject: `typeof self !== 'undefined' ? self : this`
